@@ -23,11 +23,23 @@ export class AccountController {
       @Body() account: {
           email: string,
           name?: string,
+          password: string
       },
     ):Promise<AccountModel> {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         return this.accountService.create(account);
+    }
+
+    @Post("/login")
+    async logIn(
+      @Body() account: {
+          email: string,
+          password: string,
+      },
+    ):Promise<AccountModel> {
+        return await this.accountService.login(account.email, account.password);
+
     }
 
     @Get("")

@@ -11,9 +11,10 @@ datasource db {
 }
 
 model Account {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  name String?
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  password  String
   createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  updateAt  DateTime @updatedAt
 }
