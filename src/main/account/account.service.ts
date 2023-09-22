@@ -22,15 +22,13 @@ export class AccountService {
     // 비밀번호 해시 생성
         const hashedPassword = await bcrypt.hash(account.password, 10);
 
-        // 해시된 비밀번호를 계정 데이터에 저장
-        const accountData = {
-            ...account,
-            password: hashedPassword,
-        };
-
         // Prisma를 사용하여 해시된 비밀번호를 데이터베이스에 저장
-        return await this.prisma.account.create({
-            data: accountData,
+        return this.prisma.account.create({
+            data: {
+                email: account.email,
+                name: account.name,
+                password: hashedPassword,
+            },
         });
     }
 
@@ -41,12 +39,12 @@ export class AccountService {
             },
         });
         if (!user) {
-            throw new UnauthorizedException('해당하는 이메일이 존재하지 않습니다');
+            throw new UnauthorizedException("해당하는 이메일이 존재하지 않습니다");
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            throw new UnauthorizedException('비밀번호가 틀렸습니다, 다시 입력해주세요');
+            throw new UnauthorizedException("비밀번호가 틀렸습니다, 다시 입력해주세요");
         }
     }
 
