@@ -1,9 +1,9 @@
 import {
     Body,
-    Controller, Delete, Get, Param, Patch, Post,
+    Controller, Delete, Get, Param, Patch, Post, UnauthorizedException,
 } from "@nestjs/common";
 import {
-    AccountService, 
+    AccountService,
 } from "@main/account/account.service";
 
 import {
@@ -12,7 +12,7 @@ import {
 
 @Controller('accounts')
 export class AccountController {
-    
+
     constructor(
       private readonly accountService: AccountService,
     ) {
@@ -31,21 +31,23 @@ export class AccountController {
         return this.accountService.create(account);
     }
 
-    @Post("/login")
-    async logIn(
-      @Body() account: {
-          email: string,
-          password: string,
-      },
-    ):Promise<AccountModel> {
-        return await this.accountService.login(account.email, account.password);
+  @Post('/login')
+    async logIn(@Body() account: { email: string; password: string }): Promise<{ message: string }> {
+        try {
+            await this.accountService.login(account.email, account.password);
 
+            return {
+                message: '로그인 되었습니다',
+            };
+        } catch (error) {
+            throw new UnauthorizedException('로그인 실패: ' + error.message);
+        }
     }
 
     @Get("")
-    async findAll():Promise<AccountModel[]> {
-        return this.accountService.findAll();
-    }
+  async findAll():Promise<AccountModel[]> {
+      return this.accountService.findAll();
+  }
     
     @Get(":id")
     async findById(

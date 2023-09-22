@@ -8,7 +8,7 @@ import {
     Account,
 } from "@prisma/client";
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class AccountService {
@@ -19,7 +19,7 @@ export class AccountService {
     }
 
     async create(account: Account): Promise<Account> {
-        // 비밀번호 해시 생성
+    // 비밀번호 해시 생성
         const hashedPassword = await bcrypt.hash(account.password, 10);
 
         // 해시된 비밀번호를 계정 데이터에 저장
@@ -34,31 +34,26 @@ export class AccountService {
         });
     }
 
-    async login(
-        email: string,
-        password: string,
-    ): Promise<Account> {
+    async login(email: string, password: string): Promise<void> {
         const user = await this.prisma.account.findUnique({
             where: {
                 email,
             },
         });
-        if(!user) {
-            throw new UnauthorizedException("해당하는 이메일이 존재하지 않습니다");
+        if (!user) {
+            throw new UnauthorizedException('해당하는 이메일이 존재하지 않습니다');
         }
 
-        const isPasswordValid  = await bcrypt.compare(password, user.password);
-        if(!isPasswordValid) {
-            throw new UnauthorizedException("비밀번호가 틀렸습니다, 다시 입력해주세요");
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('비밀번호가 틀렸습니다, 다시 입력해주세요');
         }
-
-        return user;
     }
 
     async findAll(): Promise<Account[]> {
         return await this.prisma.account.findMany();
     }
-    
+
     async findById(
         id: string,
     ): Promise<Account> {
@@ -70,12 +65,12 @@ export class AccountService {
 
         return result ? result : {} as Account;
     }
-    
+
     async update(
         id: string,
         account: {
-          email: string,
-      },
+      email: string,
+    },
     ): Promise<Account> {
         return await this.prisma.account.update({
             where: {
@@ -84,7 +79,7 @@ export class AccountService {
             data: account,
         });
     }
-    
+
     async remove(
         id: string,
     ): Promise<Account> {
